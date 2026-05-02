@@ -1,0 +1,69 @@
+<template>
+    <lightning-card title="Customer Engagement Insights" icon-name="standard:contact">
+        
+        <div class="slds-p-around_medium slds-border_bottom">
+            <lightning-input 
+                label="Current Context ID" 
+                value={contactId} 
+                onchange={handleIdChange}>
+            </lightning-input>
+            <lightning-button 
+                label="Refresh Insights" 
+                variant="brand" 
+                onclick={loadInsights} 
+                class="slds-m-top_small">
+            </lightning-button>
+        </div>
+
+        <template if:true={isLoading}>
+            <div class="slds-p-around_large">
+                <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+            </div>
+        </template>
+
+        <template if:true={hasData}>
+            <div class="slds-p-around_medium">
+                
+                <div class="info-card slds-box slds-m-bottom_medium">
+                    <p class="label">Name: <strong>{customerData.firstName} {customerData.lastName}</strong></p>
+                    <p class="label">Account: <strong>{customerData.accountName}</strong></p>
+                </div>
+
+                <div class="slds-grid slds-gutters slds-m-bottom_medium">
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="insight-card slds-box slds-text-align_center">
+                            <p class="insight-label">Score</p>
+                            <div class={scoreRingClass}>{customerData.engagementScore}</div>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="insight-card slds-box slds-text-align_center">
+                            <p class="insight-label">Intent</p>
+                            <lightning-badge label={customerData.intentLevel} class={intentBadgeClass}></lightning-badge>
+                        </div>
+                    </div>
+                    <div class="slds-col slds-size_1-of-3">
+                        <div class="insight-card slds-box slds-text-align_center">
+                            <p class="insight-label">Last Active</p>
+                            <p class="recency-value">{customerData.daysSinceLastActivity}d</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="slds-box recommendation-box">
+                    <p><strong><lightning-icon icon-name="utility:einstein" size="xx-small"></lightning-icon> AI Recommendation</strong></p>
+                    <div class="slds-m-vertical_small recommendation-text">
+                        {recommendation}
+                        <template if:false={recommendation}>Click the button below for insights.</template>
+                    </div>
+                    <lightning-button 
+                        label="Analyze with Einstein" 
+                        onclick={getRecommendation} 
+                        loading={isRecommendationLoading}>
+                    </lightning-button>
+                </div>
+
+            </div>
+        </template>
+    </lightning-card>
+</template>

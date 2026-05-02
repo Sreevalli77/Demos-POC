@@ -1,0 +1,75 @@
+/* customerInsights.css */
+
+/* ── Info Card ── */
+.info-card { background: #f4f6f9; border-radius: 8px; }
+.info-card .label { font-size: 11px; color: #706e6b; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.info-card .value { font-size: 15px; font-weight: 600; color: #16325c; margin: 2px 0 8px; }
+
+/* ── Insight Cards ── */
+.slds-grid_vertical-stretch .slds-col {
+    display: flex;
+}
+.slds-grid_vertical-stretch .insight-card {
+    flex: 1;
+}
+.insight-card {
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+}
+.insight-body {
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+.insight-card lightning-badge {
+    margin: 0 auto;
+}
+.insight-label { font-size: 10.2px; color: #090909; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.insight-sublabel { font-size: 11px; color: #706e6b; margin-top: 4px; margin-bottom: 0; }
+
+/* ── Engagement Score Ring ── */
+.score-ring {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    border: 5px solid #e0e5ee;
+    margin: 8px auto;
+}
+.score-ring--high  { border-color: #04844b; }
+.score-ring--medium { border-color: #ff9e2c; }
+.score-ring--low   { border-color: #c23934; }
+.score-value { font-size: 22px; font-weight: 700; color: #16325c; }
+
+/* ── Recency ── */
+.recency-value { font-size: 32px; font-weight: 700; color: #16325c; margin: 8px 0 0; }
+
+/* ── Section Header ── */
+.section-header { cursor: pointer; padding: 4px 0 8px; border-bottom: 1px solid #e0e5ee; }
+
+/* ── Activity Row ── */
+.activity-row { border-bottom: 1px solid #f3f3f3; }
+.activity-row:last-child { border-bottom: none; }
+.activity-type  { font-weight: 600; font-size: 13px; color: #16325c; }
+.activity-detail { font-size: 13px; color: #706e6b; }
+.activity-date  { font-size: 12px; color: #a8a8a8; }
+
+/* ── Recommendation ── */
+.recommendation-box { background: #f0f7ff; border-left: 4px solid #0070d2; border-radius: 6px; }
+.recommendation-text { font-size: 14px; line-height: 1.6; color: #16325c; background: #fff; border-radius: 6px; }
+.placeholder-text { font-size: 13px; color: #a8a8a8; font-style: italic; }
+
+/* ── Badge Colors ── */
+:host .badge--high   lightning-badge { --sds-c-badge-color-background: #04844b; color: #fff; }
+:host .badge--medium lightning-badge { --sds-c-badge-color-background: #ff9e2c; color: #fff; }
+:host .badge--low    lightning-badge { --sds-c-badge-color-background: #c23934; color: #fff; }
