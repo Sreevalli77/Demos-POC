@@ -49,6 +49,50 @@
 .score-ring--high  { border-color: #04844b; }
 .score-ring--medium { border-color: #ff9e2c; }
 .score-ring--low   { border-color: #c23934; }
+/* ── Search Input ── */
+.search-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-input {
+    width: 100%;
+    padding-right: 2.75rem;
+}
+
+.search-input-wrapper .slds-input {
+    background-color: #f3f2f2 !important;
+    border-color: #0176d3 !important;
+    box-shadow: 0 0 0 1px #0176d3 !important;
+}
+
+.clear-button-hidden {
+    display: none !important;
+}
+
+.clear-button {
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 10;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clear-button .slds-button__icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.clear-button:hover {
+    background: transparent;
+}
 .score-value { font-size: 22px; font-weight: 700; color: #16325c; }
 
 /* ── Recency ── */
