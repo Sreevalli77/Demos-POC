@@ -3,17 +3,50 @@
 
     
     <div class="slds-p-around_medium">
-      <lightning-input
-        label="Enter Customer ID"
-        placeholder="e.g. 003XXXXXXXXXXXXXXX"
-        value={contactId}
-        onchange={handleIdChange}>
-      </lightning-input>
+      <div class="slds-form-element">
+        <label class="slds-form-element__label">Search Contact by Name</label>
+        <div class="search-input-wrapper">
+          <lightning-input
+            class="search-input"
+            placeholder="Type at least 2 characters to search..."
+            value={searchTerm}
+            onchange={handleSearchChange}>
+          </lightning-input>
+          <lightning-button-icon
+            icon-name="utility:close"
+            variant="bare"
+            alternative-text="Clear selection"
+            class={clearButtonClass}
+            onclick={clearSelection}>
+          </lightning-button-icon>
+        </div>
+        <template if:true={searchResults.length}>
+          <div class="slds-dropdown slds-dropdown_length-5 slds-dropdown_left slds-m-top_x-small">
+            <ul class="slds-listbox slds-listbox_vertical" role="listbox">
+              <template for:each={searchResults} for:item="contact" for:index="index">
+                <li key={contact.contactId} class="slds-listbox__item" role="presentation">
+                  <div class="slds-media slds-listbox__option slds-listbox__option_entity slds-listbox__option_has-meta" role="option" onclick={handleContactSelect} data-contact-id={contact.contactId}>
+                    <div class="slds-media__figure">
+                      <lightning-icon icon-name="standard:contact" size="small"></lightning-icon>
+                    </div>
+                    <div class="slds-media__body">
+                      <div class="slds-listbox__option-header">{contact.name}</div>
+                      <div class="slds-listbox__option-meta">{contact.email}</div>
+                      <div class="slds-listbox__option-meta" if:true={contact.accountName}>Account: {contact.accountName}</div>
+                    </div>
+                  </div>
+                </li>
+              </template>
+            </ul>
+          </div>
+        </template>
+      </div>
       <div class="slds-m-top_small">
         <lightning-button
           label="Load Insights"
           variant="brand"
-          onclick={loadInsights}>
+          onclick={loadInsights}
+          disabled={isLoading}>
         </lightning-button>
       </div>
     </div>

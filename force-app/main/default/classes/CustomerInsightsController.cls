@@ -22,6 +22,13 @@ public with sharing class CustomerInsightsController {
         @AuraEnabled public String iconName;
     }
 
+    public class ContactSearchResult {
+        @AuraEnabled public String contactId;
+        @AuraEnabled public String name;
+        @AuraEnabled public String email;
+        @AuraEnabled public String accountName;
+    }
+
     @AuraEnabled(cacheable=true)
     public static CustomerInsightData getCustomerInsights(String contactId) {
         CustomerInsightData data = new CustomerInsightData();
@@ -50,6 +57,32 @@ public with sharing class CustomerInsightsController {
         data.aiRecommendation      = '';  // fetched separately via getRecommendation()
 
         return data;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<ContactSearchResult> searchContacts(String searchTerm) {
+        if (String.isBlank(searchTerm) || searchTerm.length() < 2) {
+            return new List<ContactSearchResult>();
+        }
+
+        List<Contact> contacts = [
+            SELECT Id, FirstName, LastName, Email, Account.Name
+            FROM Contact
+            WHERE (FirstName LIKE :('%' + searchTerm + '%') OR LastName LIKE :('%' + searchTerm + '%'))
+            LIMIT 5
+        ];
+
+        List<ContactSearchResult> results = new List<ContactSearchResult>();
+        for (Contact con : contacts) {
+            ContactSearchResult result = new ContactSearchResult();
+            result.contactId = con.Id;
+            result.name = (con.FirstName != null ? con.FirstName + ' ' : '') + con.LastName;
+            result.email = con.Email;
+            result.accountName = con.Account?.Name;
+            results.add(result);
+        }
+
+        return results;
     }
 
     @AuraEnabled

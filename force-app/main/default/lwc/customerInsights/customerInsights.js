@@ -1,11 +1,15 @@
 import { LightningElement, track } from 'lwc';
 import getCustomerInsights from '@salesforce/apex/CustomerInsightsController.getCustomerInsights';
 import getRecommendationApex from '@salesforce/apex/CustomerInsightsController.getRecommendation';
+import searchContacts from '@salesforce/apex/CustomerInsightsController.searchContacts';
 
 export default class CustomerInsights extends LightningElement {
 
     // ── State ──────────────────────────────────────────────────
     @track contactId = '';
+    @track searchTerm = '';
+    @track searchResults = [];
+    @track selectedContact = null;
     @track customerData = null;
     @track recommendation = '';
     @track isLoading = false;
@@ -37,19 +41,56 @@ export default class CustomerInsights extends LightningElement {
         return map[level] ?? 'badge--low';
     }
 
+    get clearButtonClass() {
+        return this.selectedContact ? 'clear-button' : 'clear-button clear-button-hidden';
+    }
+
     // ── Event Handlers ─────────────────────────────────────────
 
-    handleIdChange(event) {
-        this.contactId = event.target.value;
-        // Reset state on new input
+    async handleSearchChange(event) {
+        const newValue = event.target.value;
+        if (this.selectedContact && newValue !== this.selectedContact.name) {
+            // User is typing something different, clear selection
+            this.selectedContact = null;
+            this.contactId = '';
+            this.customerData = null;
+            this.recommendation = '';
+            this.hasError = false;
+        }
+        this.searchTerm = newValue;
+
+        if (this.searchTerm && this.searchTerm.length >= 2 && !this.selectedContact) {
+            try {
+                this.searchResults = await searchContacts({ searchTerm: this.searchTerm });
+            } catch (error) {
+                this.searchResults = [];
+            }
+        } else {
+            this.searchResults = [];
+        }
+    }
+
+    handleContactSelect(event) {
+        const selectedId = event.currentTarget.dataset.contactId;
+        this.selectedContact = this.searchResults.find(contact => contact.contactId === selectedId);
+        this.contactId = selectedId;
+        this.searchTerm = this.selectedContact?.name || '';
+        this.searchResults = []; // Hide dropdown after selection
+    }
+
+    clearSelection() {
+        this.selectedContact = null;
+        this.contactId = '';
+        this.searchTerm = '';
+        this.searchResults = [];
         this.customerData = null;
         this.recommendation = '';
         this.hasError = false;
     }
 
     async loadInsights() {
-        if (!this.contactId || this.contactId.trim() === '') {
-            this.showError('Please enter a valid Customer ID.');
+        if (!this.selectedContact) {
+            this.showError('Please select a contact from the search results.');
             return;
         }
 
@@ -59,7 +100,7 @@ export default class CustomerInsights extends LightningElement {
         this.customerData = null;
 
         try {
-            const data = await getCustomerInsights({ contactId: this.contactId.trim() });
+            const data = await getCustomerInsights({ contactId: this.contactId });
             this.customerData = data;
         } catch (error) {
             this.showError(
