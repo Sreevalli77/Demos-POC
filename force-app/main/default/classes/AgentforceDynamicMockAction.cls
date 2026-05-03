@@ -24,7 +24,6 @@ public with sharing class AgentforceDynamicMockAction {
         for (Id recId : recordIds) {
             RecommendationOutput output = new RecommendationOutput();
 
-            // 1. GENERATE DETERMINISTIC MOCK DATA
             // Get the absolute hashcode of the ID string
             Integer hash = Math.abs(String.valueOf(recId).hashCode());
             
@@ -37,7 +36,8 @@ public with sharing class AgentforceDynamicMockAction {
             else if (intentFactor == 1) output.intentLevel = 'MEDIUM';
             else output.intentLevel = 'LOW';
 
-            // 2. APPLY BUSINESS LOGIC (From your Part 2.3 requirements)
+            //APPLY BUSINESS LOGIC
+            
             if (output.intentLevel == 'HIGH' && output.engagementScore >= 60) {
                 output.urgency = 'IMMEDIATE';
                 output.recommendedAction = 'Schedule a discovery call within 24 hours';
