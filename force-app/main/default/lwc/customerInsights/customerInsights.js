@@ -1,4 +1,4 @@
-import { LightningElement, track } from 'lwc';
+import { LightningElement, track, api } from 'lwc';
 import getCustomerInsights from '@salesforce/apex/CustomerInsightsController.getCustomerInsights';
 import getRecommendationApex from '@salesforce/apex/CustomerInsightsController.getRecommendation';
 import searchContacts from '@salesforce/apex/CustomerInsightsController.searchContacts';
@@ -6,6 +6,7 @@ import searchContacts from '@salesforce/apex/CustomerInsightsController.searchCo
 export default class CustomerInsights extends LightningElement {
 
     // ── State ──────────────────────────────────────────────────
+    @api recordId;
     @track contactId = '';
     @track searchTerm = '';
     @track searchResults = [];
@@ -45,7 +46,32 @@ export default class CustomerInsights extends LightningElement {
         return this.selectedContact ? 'clear-button' : 'clear-button clear-button-hidden';
     }
 
-    // ── Event Handlers ─────────────────────────────────────────
+    get isRecordPage() {
+        return !!this.recordId && this.recordId.startsWith('003'); // Contact record ID prefix
+    }
+
+    get showSearchInput() {
+        return !this.isRecordPage;
+    }
+
+    get shouldAutoLoadRecord() {
+        return this.isRecordPage && !this.customerData && !this.isLoading;
+    }
+
+    connectedCallback() {
+        this.tryAutoLoadRecord();
+    }
+
+    renderedCallback() {
+        this.tryAutoLoadRecord();
+    }
+
+    tryAutoLoadRecord() {
+        if (this.shouldAutoLoadRecord) {
+            this.contactId = this.recordId;
+            this.loadInsights();
+        }
+    }
 
     async handleSearchChange(event) {
         const newValue = event.target.value;
@@ -89,7 +115,9 @@ export default class CustomerInsights extends LightningElement {
     }
 
     async loadInsights() {
-        if (!this.selectedContact) {
+        if (this.isRecordPage) {
+            this.contactId = this.recordId;
+        } else if (!this.selectedContact) {
             this.showError('Please select a contact from the search results.');
             return;
         }

@@ -24,34 +24,37 @@ public with sharing class AgentforceDynamicMockAction {
         for (Id recId : recordIds) {
             RecommendationOutput output = new RecommendationOutput();
 
-            // Get the absolute hashcode of the ID string
-            Integer hash = Math.abs(String.valueOf(recId).hashCode());
-            
-            // Generate a score between 0 and 100 based on hash
-            output.engagementScore = Math.mod(hash, 101); 
-            
-            // Determine Intent Level based on hash (3 levels)
-            Integer intentFactor = Math.mod(hash, 3);
-            if (intentFactor == 0) output.intentLevel = 'HIGH';
-            else if (intentFactor == 1) output.intentLevel = 'MEDIUM';
-            else output.intentLevel = 'LOW';
+            // Get a deterministic hashcode for the ID string
+            Integer rawHash = String.valueOf(recId).hashCode();
 
-            //APPLY BUSINESS LOGIC
-            
-            if (output.intentLevel == 'HIGH' && output.engagementScore >= 60) {
+            Integer score = Math.mod(rawHash, 101);
+            if (score < 0) score += 101;
+            output.engagementScore = score;
+
+            if (output.engagementScore > 80) {
+                output.intentLevel = 'HIGH';
+            } else if (output.engagementScore > 40) {
+                output.intentLevel = 'MEDIUM';
+            } else {
+                output.intentLevel = 'LOW';
+            }
+
+            System.debug('hash' + rawHash);
+            System.debug('engagementScore' + output.engagementScore);
+            System.debug('intentLevel' + output.intentLevel);
+
+            if (output.intentLevel == 'HIGH') {
                 output.urgency = 'IMMEDIATE';
                 output.recommendedAction = 'Schedule a discovery call within 24 hours';
-                output.reasoning = 'Generated High Intent + High Score signal for this specific record ID.';
-            } 
-            else if (output.intentLevel == 'MEDIUM' && output.engagementScore >= 40) {
+                output.reasoning = 'Engagement score over 80; high intent and priority.';
+            } else if (output.intentLevel == 'MEDIUM') {
                 output.urgency = 'THIS_WEEK';
                 output.recommendedAction = 'Send personalized product demo invite';
-                output.reasoning = 'Record shows moderate interest and recent activity in our simulated model.';
-            } 
-            else {
+                output.reasoning = 'Engagement score between 41 and 80; moderate intent.';
+            } else {
                 output.urgency = 'NURTURE';
                 output.recommendedAction = 'Enroll in email nurture campaign';
-                output.reasoning = 'Engagement score below threshold; recommended for long-term marketing nurture.';
+                output.reasoning = 'Engagement score 40 or below; recommend long-term nurture.';
             }
 
             results.add(output);
